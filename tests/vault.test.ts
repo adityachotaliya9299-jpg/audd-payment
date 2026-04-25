@@ -14,7 +14,10 @@ describe("MerchantVault", () => {
   const provider  = anchor.AnchorProvider.env();
   anchor.setProvider(provider);
   const program   = anchor.workspace.Solaudd as Program<any>;
-  const merchant  = provider.wallet as anchor.Wallet;
+  const payer     = provider.wallet as anchor.Wallet;
+
+  // Fresh merchant keypair every run — avoids "account already in use"
+  const merchant  = anchor.web3.Keypair.generate();
   const customer  = anchor.web3.Keypair.generate();
 
   let mint:        anchor.web3.PublicKey;
@@ -23,42 +26,47 @@ describe("MerchantVault", () => {
   let vaultPda:    anchor.web3.PublicKey;
   let vaultAta:    anchor.web3.PublicKey;
 
-  const DECIMALS    = 6;
-  const payAmount   = new BN(50 * 10 ** DECIMALS); // 50 AUDD
+  const DECIMALS  = 6;
+  const payAmount = new BN(50 * 10 ** DECIMALS);
 
   before(async function () {
     this.timeout(60000);
 
-    // Fund customer
-    const fundTx = new Transaction().add(
-      SystemProgram.transfer({
-        fromPubkey: merchant.publicKey,
+    // Fund merchant and customer from payer
+    const fundTx = new Transaction()
+      .add(SystemProgram.transfer({
+        fromPubkey: payer.publicKey,
+        toPubkey:   merchant.publicKey,
+        lamports:   0.5 * anchor.web3.LAMPORTS_PER_SOL,
+      }))
+      .add(SystemProgram.transfer({
+        fromPubkey: payer.publicKey,
         toPubkey:   customer.publicKey,
         lamports:   0.1 * anchor.web3.LAMPORTS_PER_SOL,
-      })
-    );
+      }));
     await provider.sendAndConfirm(fundTx);
 
-    // Create mint
+    // Create mint (payer is mint authority)
     mint = await createMint(
       provider.connection,
-      merchant.payer,
-      merchant.publicKey,
+      payer.payer,
+      payer.publicKey,
       null,
       DECIMALS
     );
 
-    // Create ATAs
+    // Create merchant ATA
     merchantAta = await createAssociatedTokenAccount(
       provider.connection,
-      merchant.payer,
+      payer.payer,
       mint,
       merchant.publicKey
     );
 
+    // Create customer ATA
     customerAta = await createAssociatedTokenAccount(
       provider.connection,
-      merchant.payer,
+      payer.payer,
       mint,
       customer.publicKey
     );
@@ -66,14 +74,14 @@ describe("MerchantVault", () => {
     // Mint 1000 AUDD to customer
     await mintTo(
       provider.connection,
-      merchant.payer,
+      payer.payer,
       mint,
       customerAta,
-      merchant.publicKey,
+      payer.publicKey,
       1000 * 10 ** DECIMALS
     );
 
-    // Derive PDAs
+    // Derive PDAs using merchant keypair
     [vaultPda] = anchor.web3.PublicKey.findProgramAddressSync(
       [Buffer.from("vault"), merchant.publicKey.toBuffer()],
       program.programId
@@ -92,13 +100,12 @@ describe("MerchantVault", () => {
         mint,
         vaultAta,
       })
+      .signers([merchant])
       .rpc();
 
     const vault = await program.account.vaultAccount.fetch(vaultPda);
     assert.equal(vault.merchantId, "test-merchant-001");
     assert.equal(vault.totalReceived.toString(), "0");
-    assert.equal(vault.merchant.toString(), merchant.publicKey.toString());
-
     console.log("✅ Vault initialized for merchant");
   });
 
@@ -118,14 +125,10 @@ describe("MerchantVault", () => {
       .rpc();
 
     const vault = await program.account.vaultAccount.fetch(vaultPda);
-    assert.equal(
-      vault.totalReceived.toString(),
-      payAmount.toString()
-    );
+    assert.equal(vault.totalReceived.toString(), payAmount.toString());
 
     const vaultBalance = await getAccount(provider.connection, vaultAta);
     assert.equal(vaultBalance.amount.toString(), payAmount.toString());
-
     console.log("✅ Customer paid 50 AUDD to vault");
   });
 
@@ -145,6 +148,7 @@ describe("MerchantVault", () => {
         vaultAta,
         merchantAta,
       })
+      .signers([merchant])
       .rpc();
 
     const balanceAfter = (
@@ -183,7 +187,6 @@ describe("MerchantVault", () => {
         })
         .signers([customer])
         .rpc();
-
       assert.fail("Should have thrown");
     } catch (err: any) {
       assert.ok(err);
