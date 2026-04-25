@@ -73,9 +73,7 @@ export default function PaymentLinkCreator() {
               value={recipient}
               onChange={e => setRecipient(e.target.value)}
               placeholder="Solana address..."
-              className="w-full p-3 bg-gray-800 text-white rounded-xl
-                         border border-gray-700 focus:border-purple-500
-                         focus:outline-none text-sm"
+              className="w-full p-3 bg-gray-800 text-white rounded-xl border border-gray-700 focus:border-purple-500 focus:outline-none text-sm"
             />
           </div>
 

@@ -110,7 +110,7 @@ describe("StreamPayment", () => {
     const expectedTotal = amountPerSec.mul(durationSecs).toNumber();
     assert.equal(vault.amount.toString(), expectedTotal.toString());
 
-    console.log("✅ Stream created — 10 AUDD locked (1/sec for 10s)");
+    console.log("Stream created - 10 AUDD locked (1/sec for 10s)");
   });
 
   it("recipient can withdraw earned AUDD", async function () {
@@ -138,7 +138,7 @@ describe("StreamPayment", () => {
     assert.isTrue(Number(recipientAccount.amount) > 0);
 
     console.log(
-      `✅ Withdrew ${stream.withdrawn.toNumber() / 10 ** DECIMALS} AUDD from stream`
+      `Withdrew ${stream.withdrawn.toNumber() / 10 ** DECIMALS} AUDD from stream`
     );
   });
 
@@ -159,10 +159,10 @@ describe("StreamPayment", () => {
         .rpc();
 
       // If stream has fully elapsed, this might pass — skip assertion
-      console.log("✅ Stream fully elapsed - withdrawal succeeded");
+      console.log("Stream fully elapsed - withdrawal succeeded");
     } catch (err: any) {
       assert.ok(err);
-      console.log("✅ Nothing to withdraw correctly rejected");
+      console.log(" Nothing to withdraw correctly rejected");
     }
   });
 
@@ -241,6 +241,6 @@ describe("StreamPayment", () => {
     ).amount;
 
     assert.isTrue(senderBalanceAfter > senderBalanceBefore);
-    console.log("✅ Stream cancelled — unearned AUDD refunded to sender");
+    console.log(" Stream cancelled — unearned AUDD refunded to sender");
   });
 });

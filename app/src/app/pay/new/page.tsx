@@ -9,7 +9,7 @@ export default function NewPaymentPage() {
           href="/"
           className="text-gray-500 hover:text-white text-sm mb-6 block"
         >
-          &larr; Back
+          {"←"} Back
         </Link>
         <h1 className="text-3xl font-bold mb-2">Payment Link</h1>
         <p className="text-gray-400 mb-8">
