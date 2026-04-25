@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useEscrow } from "@/hooks/useEscrow";
-import QRCode from "qrcode.react";
+import { QRCodeSVG as QRCode } from "qrcode.react";
 
 export default function PaymentLinkCreator() {
   const { connected, publicKey } = useWallet();
@@ -106,8 +106,7 @@ export default function PaymentLinkCreator() {
               onChange={e => setDays(e.target.value)}
               className="w-full p-3 bg-gray-800 text-white rounded-xl
                          border border-gray-700 focus:border-purple-500
-                         focus:outline-none text-sm"
-            >
+                         focus:outline-none text-sm">
               <option value="0">Immediately</option>
               <option value="1">1 day</option>
               <option value="3">3 days</option>
@@ -136,8 +135,7 @@ export default function PaymentLinkCreator() {
             disabled={loading || !recipient || !amount}
             className="w-full py-3 bg-purple-600 hover:bg-purple-500
                        disabled:bg-gray-700 disabled:text-gray-500
-                       text-white font-semibold rounded-xl transition"
-          >
+                       text-white font-semibold rounded-xl transition">
             {loading ? "Creating escrow..." : "Lock AUDD & Create Link"}
           </button>
         </div>
@@ -167,8 +165,7 @@ export default function PaymentLinkCreator() {
             </p>
             <button
               onClick={() => navigator.clipboard.writeText(result.payLink)}
-              className="mt-2 text-xs text-gray-400 hover:text-white transition"
-            >
+              className="mt-2 text-xs text-gray-400 hover:text-white transition">
               Copy link
             </button>
           </div>
@@ -176,21 +173,20 @@ export default function PaymentLinkCreator() {
           {/* TX */}
           <div className="p-3 bg-gray-800 rounded-xl">
             <p className="text-xs text-gray-500 mb-1">Transaction</p>
-            
-              href={`https://explorer.solana.com/tx/${result.tx}?cluster=devnet`}
-              target="_blank"
-              rel="noreferrer"
-              className="text-sm text-blue-400 hover:underline break-all"
-            >
-              View on Explorer ↗
-            </a>
+
+                <a
+                href={`https://explorer.solana.com/tx/${result.tx}?cluster=devnet`}
+                target="_blank"
+                rel="noreferrer"
+                className="text-sm text-blue-400 hover:underline break-all">
+                View on Explorer ↗
+                </a>
           </div>
 
           <button
             onClick={() => setResult(null)}
             className="w-full py-2 border border-gray-700 text-gray-400
-                       hover:text-white rounded-xl transition text-sm"
-          >
+                       hover:text-white rounded-xl transition text-sm">
             Create another
           </button>
         </div>
