@@ -43,4 +43,10 @@ pub enum SolAuddError {
 
     #[msg("Invalid merchant ID")]
     InvalidMerchantId,
+
+    #[msg("Duration must be greater than zero")]
+    InvalidDuration,
+
+    #[msg("Math overflow")]
+    MathOverflow,
 }
