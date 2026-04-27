@@ -126,7 +126,7 @@ export function useEscrow() {
         program.programId
       );
 
-      const escrow = await program.account.escrowAccount.fetch(escrowPda);
+      const escrow = await (program.account as any).escrowAccount.fetch(escrowPda);
       return escrow;
     },
     [wallet]
