@@ -129,7 +129,7 @@ export function useMerchant() {
         program.programId
       );
 
-      return await program.account.vaultAccount.fetch(vaultPda);
+      return await (program.account as any).vaultAccount.fetch(vaultPda);
     },
     [wallet]
   );

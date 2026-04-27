@@ -100,7 +100,7 @@ export function useTreasury() {
       [Buffer.from("treasury"), wallet.publicKey.toBuffer()],
       program.programId
     );
-    return await program.account.treasuryAccount.fetch(treasuryPda);
+    return await (program.account as any).treasuryAccount.fetch(treasuryPda);
   }, [wallet]);
 
   return { initTreasury, depositTreasury, executePayment, fetchTreasury };

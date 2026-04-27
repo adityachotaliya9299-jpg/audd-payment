@@ -118,7 +118,7 @@ export function useStream() {
         program.programId
       );
 
-      return await program.account.streamAccount.fetch(streamPda);
+      return await (program.account as any).streamAccount.fetch(streamPda);
     },
     [wallet]
   );
