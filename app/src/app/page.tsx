@@ -70,7 +70,7 @@ export default function Home() {
         </h1>
 
         <p className="text-gray-400 text-lg mb-8 max-w-2xl mx-auto">
-          Real-world AUDD stablecoin infrastructure — payments, streaming
+          Real-world AUDD stablecoin infrastructure - payments, streaming
           salaries, merchant vaults and business treasury. All on-chain.
         </p>
 

@@ -2,16 +2,18 @@
 
 import Link from "next/link";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useWallet, useConnection } from "@solana/wallet-adapter-react";
 import { useEffect, useState } from "react";
-import { useConnection } from "@solana/wallet-adapter-react";
 import { AUDD_MINT, AUDD_DECIMALS } from "@/lib/constants";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 
 export default function Navbar() {
   const { publicKey, connected } = useWallet();
   const { connection }           = useConnection();
-  const [auddBal, setAuddBal]    = useState<number | null>(null);
+  const [auddBal,  setAuddBal]   = useState<number | null>(null);
+  const [mounted,  setMounted]   = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     if (!publicKey) { setAuddBal(null); return; }
@@ -29,23 +31,15 @@ export default function Navbar() {
           Sol<span className="text-purple-400">AUDD</span>
         </Link>
         <div className="hidden sm:flex gap-4 text-sm text-gray-400">
-          <Link href="/pay/new" className="hover:text-white transition">
-            Payment
-          </Link>
-          <Link href="/stream" className="hover:text-white transition">
-            Stream
-          </Link>
-          <Link href="/merchant" className="hover:text-white transition">
-            Merchant
-          </Link>
-          <Link href="/treasury" className="hover:text-white transition">
-            Treasury
-          </Link>
+          <Link href="/pay/new" className="hover:text-white transition">Payment</Link>
+          <Link href="/stream" className="hover:text-white transition">Stream</Link>
+          <Link href="/merchant" className="hover:text-white transition">Merchant</Link>
+          <Link href="/treasury" className="hover:text-white transition">Treasury</Link>
         </div>
       </div>
 
       <div className="flex items-center gap-3">
-        {connected && auddBal !== null && (
+        {mounted && connected && auddBal !== null && (
           <div className="hidden sm:flex items-center gap-1 px-3 py-1
                           bg-gray-800 rounded-lg text-sm">
             <span className="text-gray-400">AUDD</span>
@@ -54,7 +48,7 @@ export default function Navbar() {
             </span>
           </div>
         )}
-        <WalletMultiButton style={{ fontSize: "13px", padding: "8px 16px" }} />
+        {mounted && <WalletMultiButton style={{ fontSize: "13px", padding: "8px 16px" }} />}
       </div>
     </nav>
   );

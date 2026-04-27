@@ -140,7 +140,7 @@ describe("TreasuryManager", () => {
     this.timeout(30000);
 
     await program.methods
-      .executeTreasuryPayment(salaryAmount, "April salary - Aditya")
+      .executePaymentTreasury(salaryAmount, "April salary - Aditya")
       .accounts({
         authority:       authority.publicKey,
         treasuryAccount: treasuryPda,
@@ -179,7 +179,7 @@ describe("TreasuryManager", () => {
 
     try {
       await program.methods
-        .executeTreasuryPayment(salaryAmount, "hack attempt")
+        .executePaymentTreasury(salaryAmount, "hack attempt")
         .accounts({
           authority:       employee.publicKey,
           treasuryAccount: treasuryPda,
